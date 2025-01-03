@@ -1,6 +1,11 @@
 package com.tckmpsi.objectdetectordemo.network;
 
+import android.util.Log;
+
+import com.tckmpsi.objectdetectordemo.models.Disease;
 import com.tckmpsi.objectdetectordemo.models.ImageData;
+import com.tckmpsi.objectdetectordemo.models.DiseaseDetail;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -8,51 +13,65 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkClient {
+    private static final String BASE_URL = "http://192.168.1.18:8088/";
+    private static final String TAG = "NetworkClient";
 
-    // Define your base URL (the server URL)
-    private static final String BASE_URL = "http://192.168.1.18:8088/"; // Replace with your server's base URL
-
-    // Create a Retrofit instance
-    private static Retrofit retrofit = new Retrofit.Builder()
+    private static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())  // Gson converter to handle JSON responses
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
-    // Create an instance of the ApiService
-    private static ApiService apiService = retrofit.create(ApiService.class);
+    private static final ApiService apiService = retrofit.create(ApiService.class);
 
-    // Method to send image data to the server
-    public static void sendImageData(String base64Image, String modelName, ResponseCallback callback) {
-        // Create an ImageData object with the Base64 image and model name
+    public static void sendImageData(String base64Image, String modelName, final DiseaseCallback callback) {
         ImageData imageData = new ImageData(base64Image, modelName);
+        Call<Disease> call = apiService.sendImageData(imageData);
 
-        // Call the sendImageData method from ApiService
-        Call<Void> call = apiService.sendImageData(imageData);
-
-        // Asynchronously execute the API call
-        call.enqueue(new Callback<Void>() {
+        call.enqueue(new Callback<Disease>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    // If the response is successful, notify the callback
-                    callback.onSuccess();
+            public void onResponse(Call<Disease> call, Response<Disease> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
                 } else {
-                    // If there is an error, notify the callback with the error message
-                    callback.onFailure("Error: " + response.code());
+                    if (response.code() == 422) {
+                        callback.onFailure("Invalid request: Please check image data format");
+                    } else {
+                        callback.onFailure("Error: " + response.code());
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                // Handle failure in making the API call
+            public void onFailure(Call<Disease> call, Throwable t) {
+                Log.e(TAG, "Network error", t);
                 callback.onFailure("Network error: " + t.getMessage());
             }
         });
     }
 
-    // Callback interface for handling success and failure responses
-    public interface ResponseCallback {
-        void onSuccess();
+    public static void fetchDiseaseData(DiseaseCallback callback) {
+        Call<Disease> call = apiService.getDisease();
+
+        call.enqueue(new Callback<Disease>() {
+            @Override
+            public void onResponse(Call<Disease> call, Response<Disease> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Disease> call, Throwable t) {
+                Log.e(TAG, "Network error", t);
+                callback.onFailure("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    public interface DiseaseCallback {
+        void onSuccess(Disease disease);
         void onFailure(String errorMessage);
     }
 }
