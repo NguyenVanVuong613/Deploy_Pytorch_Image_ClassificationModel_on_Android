@@ -7,6 +7,7 @@
     android:padding="16dp"
     tools:context=".activities.MainActivity">
 
+    <!-- Image Preview -->
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
@@ -17,9 +18,9 @@
         android:contentDescription="Selected image for classification"
         android:scaleType="fitCenter"
         app:layout_constraintHeight_percent="0.4"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Loading Indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -30,6 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Classification Result -->
     <TextView
         android:id="@+id/result_text"
         android:layout_width="match_parent"
@@ -46,6 +48,7 @@
         app:layout_constraintBottom_toTopOf="@id/buttons_layout"
         android:gravity="center" />
 
+    <!-- Button Container -->
     <LinearLayout
         android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
@@ -54,8 +57,31 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- Model Selection Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Model:"
+                android:layout_marginEnd="8dp"
+                android:textStyle="bold" />
 
+            <Spinner
+                android:id="@+id/model_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:background="@android:drawable/btn_dropdown"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <!-- Image Source Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,56 +98,28 @@
                 android:text="Camera"
                 android:drawableStart="@android:drawable/ic_menu_camera"
                 android:padding="8dp"
-                android:minHeight="48dp"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
+                android:textSize="14sp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/gallery_button"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:text="Gallery"
                 android:drawableStart="@android:drawable/ic_menu_gallery"
                 android:padding="8dp"
-                android:minHeight="48dp"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
-        <LinearLayout
+        <!-- Classify Button -->
+        <Button
+            android:id="@+id/detect"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <Button
-                android:id="@+id/choose_model_button"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="Model"
-                android:drawableStart="@android:drawable/ic_menu_edit"
-                android:padding="8dp"
-                android:minHeight="48dp"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
-
-            <Button
-                android:id="@+id/detect"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="Classify"
-                android:enabled="false"
-                android:padding="8dp"
-                android:minHeight="48dp"
-                android:textSize="14sp"
-                tools:ignore="HardcodedText" />
-
-        </LinearLayout>
+            android:layout_height="48dp"
+            android:text="Classify"
+            android:enabled="false"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
